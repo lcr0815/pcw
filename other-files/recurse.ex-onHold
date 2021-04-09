@@ -1,0 +1,10 @@
+defmodule Recurse do
+	def loopy([h|t]) do
+	  IO.puts "Heade: #{h} Tail: #{inspect(t)}"
+	  loopy(t)
+	end
+
+	def loopy([]), do: IO.puts "Done!"
+end
+
+Recurse.loopy([1,2,3,4,5])

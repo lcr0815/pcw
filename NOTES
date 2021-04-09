@@ -1,0 +1,72 @@
+1. on test module, the servyTest module fails as shown in the video
+    it only works when lne #3 is changed to:
+        doctest Servy.Handler
+    then it works as shown on the video
+    ?   what am i missing
+
+2. on the ParserTest, what the aliases for, I still don't get the real purpose of the alias.
+
+  def parse_headers([head|tail], headers) do
+
+    [key, value] = String.split(head, ": ")
+
+    headers = Map.put(headers, key, value)
+
+    parse_headers(tail, headers)
+  end
+
+  def parse_headers([], headers), do: headers
+
+<ul>
+    <%= Enum.map(bears, fn bear -> %>
+    <li><%= bear.name %> - <%= bear.type %></li>
+    <% end) %>
+</ul>
+
+
+==========
+
+
+    response = handle(request)
+    IO.puts response\r
+
+    request = """
+    GET /bigfoot HTTP/1.1\r
+    Host: example.com\r
+    User-Agent: ExamplesBrowser/1.0\r
+    Accept: */*\r
+    \r
+    """
+
+    response = handle(request)
+    IO.puts response\r
+
+    request = """
+    GET /bears/1 HTTP/1.1\r
+    Host: example.com\r
+    User-Agent: ExamplesBrowser/1.0\r
+    Accept: */*\r
+    \r
+    """
+
+    response = handle(request)
+    IO.puts response\r
+
+
+    request = """
+    GET /about HTTP/1.1\r
+    Host: example.com\r
+    User-Agent: ExamplesBrowser/1.0\r
+    Accept: */*\r
+    \r
+    """
+
+    response = handle(request)
+    IO.puts response\r
+
+
+
+========================
+
+curl  -H 'Token: 123456789' -H 'Content-Type: application/json' -XPOST http://localhost:4000/api/bears -d '{"name": "brerezzly", "type": "Polaris"}'
+
