@@ -6,6 +6,7 @@ defmodule Servy.Handler do
 
   alias Servy.Conv
   alias Servy.BearController
+  alias Servy.VideoCam
 
   import Servy.Plugins, only: [log: 1, rewrite_path: 1, track: 1]
   import Servy.Parser
@@ -15,11 +16,43 @@ defmodule Servy.Handler do
     request
     |> parse
     |> rewrite_path
-    |> log
     |> route
     |> track
     |> format_response
 
+  end
+
+  def route(%Conv{method: "GET", path: "/snapshots"} = conv) do
+
+    parent = self()
+
+    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-1")})end)
+    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-2")})end)
+    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-3")})end)
+
+    snapshot1 = receive do {:result, filename} -> filename end
+    snapshot2 = receive do {:result, filename} -> filename end
+    snapshot3 = receive do {:result, filename} -> filename end
+
+    snapshots = [ snapshot1, snapshot2, snapshot3 ]
+
+    %{ conv | status: 200, response_body: inspect snapshots}
+  end
+
+  @doc """
+  this route simulates an error crash
+  """
+  def route(%Conv{method: "GET", path: "/kaboom"} = _conv) do
+    raise "Kaboom!"
+  end
+
+  # @doc """
+  # this route function hibernates for x amount of time
+  # """
+  def route(%Conv{method: "GET", path:  "/hibernate/" <> time} = conv) do
+    time |> String.to_integer |> :timer.sleep
+
+    %{ conv | status: 200, response_body: "Awake!" }
   end
 
   def route(%Conv{method: "GET", path:  "/wildthings"} = conv) do

@@ -16,6 +16,9 @@ defmodule Servy.BearController do
 
   end
   def index(conv) do
+
+    IO.puts "the templates are in: #{@templates_path}"
+
     bears =
         Wildthings.list_bears()
       |> Enum.sort(&Bear.order_by_name/2)
