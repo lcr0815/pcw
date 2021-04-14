@@ -22,7 +22,6 @@ defmodule Servy.MixProject do
   defp deps do
     [
       {:poison, "~> 4.0"}
-      {:httpoison, "~> 1.6"}
     ]
   end
 end

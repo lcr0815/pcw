@@ -19,8 +19,9 @@ defmodule Servy.HttpServer do
   end
 
   def start(port) when is_integer(port) and port > 1023 do
-    # Creates a socket to lesten for client connections,
+    # Creates a socket to listen for client connections,
     # `listen_socket` is bound to the listening socket.
+    IO.puts "\x1b[31m\x1b[47m\x1b[5m\x1b[4mWht the hell\x1b[0m"
     {:ok, listen_socket} =
       :gen_tcp.listen(port,  [:binary, packet: :raw, active: false, reuseaddr: true])
 

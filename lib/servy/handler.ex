@@ -22,17 +22,34 @@ defmodule Servy.Handler do
 
   end
 
+  def route(%Conv{method: "GET", path: "/sensors"} = conv) do
+
+    task = Task.async(fn-> Servy.Tracker.get_location("bigfoot") end)
+
+    #now to use pipelines to remove some code
+    snapshots =
+      ["cam-1", "cam-2", "cam-3"]
+      |> Enum.map(&Task.async(fn -> VideoCam.get_snapshot(&1) end))
+      |> Enum.map(&Task.await/1)
+
+    where_is_bigfoot = Task.await(task)
+
+    %{ conv | status: 200, response_body: inspect {snapshots, where_is_bigfoot}}
+
+  end
+
+
   def route(%Conv{method: "GET", path: "/snapshots"} = conv) do
 
     parent = self()
 
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-1")})end)
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-2")})end)
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-3")})end)
+    Fetcher.async(fn -> VideoCam.get_snapshot("cam-1") end)
+    Fetcher.async(fn -> VideoCam.get_snapshot("cam-2") end)
+    Fetcher.async(fn -> VideoCam.get_snapshot("cam-3") end)
 
-    snapshot1 = receive do {:result, filename} -> filename end
-    snapshot2 = receive do {:result, filename} -> filename end
-    snapshot3 = receive do {:result, filename} -> filename end
+    snapshot1 = Fetcher.get_result()
+    snapshot2 = Fetcher.get_result()
+    snapshot3 = Fetcher.get_result()
 
     snapshots = [ snapshot1, snapshot2, snapshot3 ]
 
